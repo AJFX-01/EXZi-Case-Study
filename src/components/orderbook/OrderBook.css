@@ -1,0 +1,40 @@
+/* OrderBook.css */
+.order-book-container {
+display: flex;
+flex-direction: row;
+margin-top: 20px;
+}
+
+.order-book-section {
+    width: 100%;
+}
+
+.order-book-section h3 {
+text-align: center;
+}
+
+.order-book-section table {
+width: 100%;
+border-collapse: collapse;
+}
+
+.order-book-section th, .order-book-section td {
+width: 80px !important;
+padding: 8px;
+text-align: left;
+}
+
+.order-book-section th {
+background-color:  rgb(21, 24, 33);
+color: white;
+}
+
+.maincon {
+    align-items: start;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+h3 {
+    text-align: start;
+}
+  
