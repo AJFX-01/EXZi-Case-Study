@@ -173,7 +173,7 @@ const CreateOrder = () => {
           <InputField
             label="Price"
             type="number"
-            value={formatPrice(price)}
+            value={(price)}
             onChange={handlePriceChange1}
           />
         )}
