@@ -5,7 +5,7 @@ import {
   ADD_ASKS,
   ADD_ORDER,
   CANCEL_ORDER,
-
+  UPDATE_ORDER_STATUS,
   SET_BALANCE, UPDATE_BALANCE, REDUCE_BALANCE,
 } from './actions';
 
@@ -95,6 +95,15 @@ const orderReducer = (state = initialOrderState, action) => {
       return {
         ...state,
         orders: [action.payload, ...state.orders],
+      };
+    case UPDATE_ORDER_STATUS:
+      return {
+        ...state,
+        pendingOrders: state.orders.map(order =>
+          order.id === action.payload.orderId
+            ? { ...order, status: action.payload.status }
+            : order
+        ),
       };
     case CANCEL_ORDER:
       const updatedOrders = state.orders.map((order, index) => {

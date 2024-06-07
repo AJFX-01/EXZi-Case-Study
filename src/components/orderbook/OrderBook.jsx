@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {  formatPrice } from '../../utils/orders';
-import { addBids, addAsks, setCryptoPair, setFormattedCryptoPair } from '../../red/actions';
+import { addBids, addAsks, setCryptoPair, setFormattedCryptoPair, updateOrderStatus } from '../../red/actions';
 import PairDropdown from '../Pairs';
 import './OrderBook.css';
 import Balance from '../Balance/Balance';
@@ -16,6 +16,7 @@ const OrderBook = ({ onPriceClick }) => {
   const formattedCryptoPair = useSelector((state) => state.app.formattedCryptoPair);
   const bids = useSelector((state) => state.orderBook.bids);
   const asks = useSelector((state) => state.orderBook.asks);
+  const pendingOrders = useSelector((state) => state.order.orders); 
 
   
   const depth = 10;
@@ -47,29 +48,60 @@ const OrderBook = ({ onPriceClick }) => {
     return () => {
       ws.close();
     };
-  }, [cryptoPair]);
+  }, [cryptoPair, pendingOrders]);
 
   let currentBids = [];
   let currentAsks = [];
 
   const process = (data) => {
+    // Check bids against pending buy orders
     if (data?.bids?.length > 0) {
-      currentBids = [...currentBids, ...data.bids];
-
-      if (currentBids.length > ORDERBOOK_LEVELS) {
-        dispatch(addBids(currentBids.slice(0, ORDERBOOK_LEVELS)));
-        currentBids = currentBids.slice(ORDERBOOK_LEVELS);
-      }
+      data.bids.forEach(bid => {
+        const bidPrice = parseFloat(bid[0]);
+        const matchingOrders = pendingOrders.filter(order => order.orderType === 'BUY LIMIT' && parseFloat(order.price) === bidPrice);
+        if (matchingOrders.length > 0) {
+          matchingOrders.forEach(order => handleMatchFound(order));
+        }
+      });
+      dispatch(addBids(data.bids.slice(0, ORDERBOOK_LEVELS)));
+      currentBids = currentBids.slice(ORDERBOOK_LEVELS);
     }
-    if (data?.asks?.length > 0) {
-      currentAsks = [...currentAsks, ...data.asks];
 
-      if (currentAsks.length > ORDERBOOK_LEVELS) {
-        dispatch(addAsks(currentAsks.slice(0, ORDERBOOK_LEVELS)));
-        currentAsks = currentAsks.slice(ORDERBOOK_LEVELS);
-      }
+    // Check asks against pending sell orders
+    if (data?.asks?.length > 0) {
+      data.asks.forEach(ask => {
+        const askPrice = parseFloat(ask[0]);
+        const matchingOrders = pendingOrders.filter(order => order.orderType === 'SELL LIMIT' && parseFloat(order.price) === askPrice);
+        if (matchingOrders.length > 0) {
+          matchingOrders.forEach(order => handleMatchFound(order));
+        }
+      });
+      dispatch(addAsks(data.asks.slice(0, ORDERBOOK_LEVELS)));
+      currentAsks = currentAsks.slice(ORDERBOOK_LEVELS);
     }
   };
+
+  const handleMatchFound = (matchedOrder) => {
+    dispatch(updateOrderStatus(matchedOrder.id, 'filled'));
+  };
+  // const process = (data) => {
+  //   if (data?.bids?.length > 0) {
+  //     currentBids = [...currentBids, ...data.bids];
+
+  //     if (currentBids.length > ORDERBOOK_LEVELS) {
+  //       dispatch(addBids(currentBids.slice(0, ORDERBOOK_LEVELS)));
+  //       currentBids = currentBids.slice(ORDERBOOK_LEVELS);
+  //     }
+  //   }
+  //   if (data?.asks?.length > 0) {
+  //     currentAsks = [...currentAsks, ...data.asks];
+
+  //     if (currentAsks.length > ORDERBOOK_LEVELS) {
+  //       dispatch(addAsks(currentAsks.slice(0, ORDERBOOK_LEVELS)));
+  //       currentAsks = currentAsks.slice(ORDERBOOK_LEVELS);
+  //     }
+  //   }
+  // };
 
   const buildPriceLevels = (levels, orderType) => {
     const sortedLevelsByPrice = [...levels].sort((currentLevel, nextLevel) =>

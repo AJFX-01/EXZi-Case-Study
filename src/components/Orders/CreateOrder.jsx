@@ -134,6 +134,7 @@ const CreateOrder = ({ selectedPrice }) => {
     }
 
     const order = {
+      id: Date.now().toString(),
       pairs: formattedCryptoPair,
       orderType: selectedOrderType,
       price: finalPrice,

@@ -7,6 +7,7 @@ export const UPDATE_BALANCE = 'UPDATE_BALANCE';
 export const REDUCE_BALANCE = 'REDUCE_BALANCE';
 export const ADD_ORDER = 'ADD_ORDER';
 export const CANCEL_ORDER = 'CANCEL_ORDER';
+export const UPDATE_ORDER_STATUS = 'UPDATE_ORDER_STATUS';
 
 // balance
 export const setBalance = (balance) => ({
@@ -58,3 +59,9 @@ export const cancelOrder = (index) => {
     payload: index,
   };
 };
+
+
+export const updateOrderStatus = (orderId, status) => ({
+  type: UPDATE_ORDER_STATUS,
+  payload: { orderId, status },
+});
