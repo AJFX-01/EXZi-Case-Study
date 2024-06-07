@@ -3,8 +3,9 @@ import {
   SET_FORMATTED_CRYPTO_PAIR,
   ADD_BIDS,
   ADD_ASKS,
+  ADD_ORDER,
+  SET_BALANCE, UPDATE_BALANCE, REDUCE_BALANCE
 } from './actions';
-import { SET_BALANCE, UPDATE_BALANCE } from './actions';
 
 import { combineReducers } from 'redux';
 
@@ -23,7 +24,11 @@ const initialOrderBookState = {
   asks: [],
 };
 
+const initialOrderState = {
+  orders: [],
+};
 
+// CrytoPairs
 const appReducer = (state = initialAppState, action) => {
   switch (action.type) {
     case SET_CRYPTO_PAIR:
@@ -40,7 +45,7 @@ const appReducer = (state = initialAppState, action) => {
       return state;
   }
 };
-
+// OrderBook
 const orderBookReducer = (state = initialOrderBookState, action) => {
   switch (action.type) {
     case ADD_BIDS:
@@ -58,6 +63,7 @@ const orderBookReducer = (state = initialOrderBookState, action) => {
   }
 };
 
+// Balance
 const balanceReducer = (state = initialBalanceState, action) => {
   switch (action.type) {
     case SET_BALANCE:
@@ -70,6 +76,24 @@ const balanceReducer = (state = initialBalanceState, action) => {
         ...state,
         balance: state.balance + action.payload,
       };
+    case REDUCE_BALANCE:
+      return {
+        ...state,
+        balance: state.balance - action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+// Orders
+const orderReducer = (state = initialOrderState, action) => {
+  switch (action.type) {
+    case ADD_ORDER:
+      return {
+        ...state,
+        orders: [action.payload, ...state.orders],
+      };
     default:
       return state;
   }
@@ -78,7 +102,8 @@ const balanceReducer = (state = initialBalanceState, action) => {
 const rootReducer = combineReducers({
   app: appReducer,
   orderBook: orderBookReducer,
-  balance: balanceReducer
+  balance: balanceReducer,
+  order: orderReducer
 });
 
 export default rootReducer;

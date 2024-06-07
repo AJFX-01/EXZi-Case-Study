@@ -3,6 +3,7 @@ import OrderBook from "../../components/orderbook/OrderBook"
 import CreateOrder from "../../components/Orders/CreateOrder";
 import { ToastContainer, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import OrderTable from "../../components/Orders/OrderHistory";
 
 const LandingPage = () => {
 
@@ -28,6 +29,7 @@ const LandingPage = () => {
             </div>
             <div style={{marginRight: "20px", width: "40%", height: "600px"}}>
                 <CreateOrder/>
+                <OrderTable/>
             </div>
         </>
     );

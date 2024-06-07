@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
 import InputField from "../Inputs/InputField"
 import OrderTypeDropdown, {orderTypes} from "./OrderType"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import QuantitySlider from "./QuantityRange"
 import { formatPrice, formatToFiveDecimalPlaces } from "../../utils/orders"
+import { reduceBalance, addOrder } from "../../red/actions"
+import PairDropdown from "../Pairs"
 const CreateOrder = () => {
-
+    const dispatch = useDispatch();
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const formattedCryptoPair = useSelector((state) => state.app.formattedCryptoPair);
@@ -47,28 +49,46 @@ const CreateOrder = () => {
         setPrice(newPrice);
     };
     
-      const handleQuantityChange2 = (e) => {
-        const newQuantity = formatToFiveDecimalPlaces(e.target.value);
+    const handleQuantityChange2 = (e) => {
+    const newQuantity = formatToFiveDecimalPlaces(e.target.value);
+    setQuantity(newQuantity);
+    };
+
+    const updateQuantity = (price, percentage) => {
+    if (price > 0) {
+        const newQuantity = formatToFiveDecimalPlaces((balance * percentage) / (100 * price));
         setQuantity(newQuantity);
-      };
+    }
+    };
     
-      const updateQuantity = (price, percentage) => {
-        if (price > 0) {
-          const newQuantity = formatToFiveDecimalPlaces((balance * percentage) / (100 * price));
-          setQuantity(newQuantity);
-        }
-      };
-    
-      const handleSliderChange = (value) => {
-        setSliderValue(value);
-        updateQuantity(price, value);
-      };
-    
-      const isOrderValid = quantity * price <= balance;
-    
-      useEffect(() => {
-        updateQuantity(price, sliderValue);
-      }, [price, sliderValue]);
+    const handleSliderChange = (value) => {
+    setSliderValue(value);
+    updateQuantity(price, value);
+    };
+
+    const isOrderValid = quantity * price <= balance;
+
+    useEffect(() => {
+    updateQuantity(price, sliderValue);
+    }, [price, sliderValue]);
+
+    const handleCreateOrder = () => {
+        const totalCost = price * quantity;
+        const order = {
+            orderType: selectedOrderType,
+            price: price,
+            quantity: quantity,
+            total: totalCost.toFixed(5),
+            dateCreated: new Date().toLocaleString(),
+            completedDate: '',
+            status: 'Pending'
+        };
+        dispatch(addOrder(order));
+        dispatch(reduceBalance(totalCost))
+        setPrice('');
+        setQuantity('');
+        setSliderValue(0);
+    };
     
     return (
         <div style={{marginRight: "20px"}}>
@@ -84,7 +104,8 @@ const CreateOrder = () => {
                 alignContent: "center"
                }}>
                 <OrderTypeDropdown selectedOrderType={selectedOrderType} onChange={handleOrderTypeChange}/>
-                <span style={{color: "white", fontSize: "12px", marginTop: "20px"}}>{formattedCryptoPair.toUpperCase()}</span>
+                {/* <span style={{color: "white", fontSize: "12px", marginTop: "20px"}}>{formattedCryptoPair.toUpperCase()}</span> */}
+                <PairDropdown/>
                 </div> 
                 <InputField
                     label="Price"
@@ -112,7 +133,9 @@ const CreateOrder = () => {
                      color: "white",
                      cursor: "pointer"
                      
-                }}  disabled={!isOrderValid}>
+                }}  disabled={!isOrderValid}
+                onClick={handleCreateOrder}
+                >
                     {selectedOrderType}
                 </button>
             </div>
