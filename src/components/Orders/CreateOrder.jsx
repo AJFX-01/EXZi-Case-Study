@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import InputField from "../Inputs/InputField";
 import OrderTypeDropdown, { orderTypes } from "./OrderType";
@@ -37,7 +35,7 @@ const CreateOrder = ({ selectedPrice }) => {
 
   const updateQuantity = (price, percentage) => {
     if (price > 0) {
-      const newQuantity = formatToSignificantDecimals((balance * percentage) / (100 * price));
+      const newQuantity = formatToFiveDecimalPlaces((balance * percentage) / (100 * price));
       setQuantity(newQuantity);
     }
   };
@@ -152,7 +150,7 @@ const CreateOrder = ({ selectedPrice }) => {
     setSliderValue(0);
     toast.success(`Your ${selectedOrderType} order for ${formattedCryptoPair} is completed`);
     setPrice(finalPrice);
-    setMarketPrice(finalPrice);
+    setMarketPrice(marketPrice)
   };
 
   return (
