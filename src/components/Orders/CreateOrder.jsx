@@ -6,7 +6,7 @@ import OrderTypeDropdown, { orderTypes } from "./OrderType";
 import { useSelector, useDispatch } from "react-redux";
 import QuantitySlider from "./QuantityRange";
 import { toast } from "react-toastify";
-import { formatPrice, formatToFiveDecimalPlaces, formatTradingPair } from "../../utils/orders";
+import { formatToFiveDecimalPlaces, formatTradingPair } from "../../utils/orders";
 import { reduceBalance, addOrder, setCryptoPair, setFormattedCryptoPair } from "../../red/actions";
 import PairDropdown from "../Pairs";
 import axios from 'axios';
@@ -85,7 +85,7 @@ const CreateOrder = () => {
     };
 
     fetchMarketPrice();
-  }, [formattedCryptoPair]);
+  }, [formattedCryptoPair, marketPrice, apiPair, setMarketPrice, setPrice]);
 
   const handleCreateOrder = async () => {
     let finalPrice = price;
@@ -138,10 +138,11 @@ const CreateOrder = () => {
 
     dispatch(addOrder(order));
     dispatch(reduceBalance(totalCost));
-    setPrice('');
     setQuantity('');
     setSliderValue(0);
     toast.success(`Your ${selectedOrderType} order for ${formattedCryptoPair} is completed`);
+    setPrice(finalPrice);
+    setMarketPrice(finalPrice);
   };
 
   return (
@@ -162,13 +163,15 @@ const CreateOrder = () => {
         </div>
 
         {selectedOrderType === 'MARKET SELL' || selectedOrderType === 'MARKET BUY' ? (
-          <InputField
-            label="Market Price"
-            type="text"
-            value={marketPrice}
-            placeholder="Market Price"
-            disabled
-          />
+          <>
+            <InputField
+              label="Market Price"
+              type="text"
+              value="Market Price"
+              disabled
+            />
+            <input type="hidden" value={marketPrice} />
+          </>
         ) : (
           <InputField
             label="Price"
