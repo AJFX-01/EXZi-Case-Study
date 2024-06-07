@@ -4,7 +4,9 @@ import {
   ADD_BIDS,
   ADD_ASKS,
   ADD_ORDER,
-  SET_BALANCE, UPDATE_BALANCE, REDUCE_BALANCE
+  CANCEL_ORDER,
+
+  SET_BALANCE, UPDATE_BALANCE, REDUCE_BALANCE,
 } from './actions';
 
 import { combineReducers } from 'redux';
@@ -93,6 +95,20 @@ const orderReducer = (state = initialOrderState, action) => {
       return {
         ...state,
         orders: [action.payload, ...state.orders],
+      };
+    case CANCEL_ORDER:
+      const updatedOrders = state.orders.map((order, index) => {
+        if (index === action.payload) {
+          return {
+            ...order,
+            status: 'Cancelled',
+          };
+        }
+        return order;
+      });
+      return {
+        ...state,
+        orders: updatedOrders,
       };
     default:
       return state;

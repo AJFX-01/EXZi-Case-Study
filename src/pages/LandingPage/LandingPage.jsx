@@ -17,6 +17,7 @@ const LandingPage = () => {
             newestOnTop={false}
             closeOnClick
             rtl={false}
+            width="600px"
             pauseOnFocusLoss
             draggable
             pauseOnHover={false}
@@ -27,7 +28,7 @@ const LandingPage = () => {
                 <OrderBook/>
                 <Chart/>
             </div>
-            <div style={{marginRight: "20px", width: "40%", height: "600px"}}>
+            <div style={{ justifyContent: "space-between", display: "flex", flexDirection: "row", width: "95%", padding: "20px"}}>
                 <CreateOrder/>
                 <OrderTable/>
             </div>

@@ -1,3 +1,8 @@
+
+export const formatTradingPair = (pair) => {
+    return pair.replace('/', '_');
+};
+
 export const formatNumber = (arg) => {
     return new Intl.NumberFormat('en-US').format(arg);
 };
@@ -13,3 +18,4 @@ export const formatToFiveDecimalPlaces = (number) => {
     if (isNaN(num)) return '';
     return num.toFixed(5);
 };
+

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import { setBalance, updateBalance } from "../../red/actions";
+import { formatPrice } from "../../utils/orders";
 
 const Balance = () => {
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const Balance = () => {
 
     return (
         <div style={{ marginTop: "20px", display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center"}}>
-          <h2 style={{ fontSize: "14px", color: "white", marginRight: "10px"}}>${balance}.00</h2>
+          <h2 style={{ fontSize: "14px", color: "white", marginRight: "10px"}}>${formatPrice(balance)}</h2>
             {isEditing && (
                 <div>
                 <input style={{ 
