@@ -10,10 +10,9 @@ import Balance from '../Balance/Balance';
 
 const ORDERBOOK_LEVELS = 10;
 
-const OrderBook = () => {
+const OrderBook = ({ onPriceClick }) => {
   const dispatch = useDispatch();
   const cryptoPair = useSelector((state) => state.app.cryptoPair);
-  console.log(cryptoPair)
   const formattedCryptoPair = useSelector((state) => state.app.formattedCryptoPair);
   const bids = useSelector((state) => state.orderBook.bids);
   const asks = useSelector((state) => state.orderBook.asks);
@@ -80,17 +79,18 @@ const OrderBook = () => {
     const priceStyle = {
       fontSize: '8px',
       color: orderType === 'BIDS' ? 'green' : 'red',
+      cursor: 'pointer',
     };
 
     return sortedLevelsByPrice.map((level, idx) => {
-      const price = formatPrice(parseFloat(level[0]));
+      const price = (parseFloat(level[0]));
       const size = (parseFloat(level[1]));
       const total = (parseFloat(level[1]));
 
       return (
         <tr key={idx}>
-          <td style={priceStyle}>{price}</td>
-          <td  style={{ fontSize: "10px", color: "white"}}>{size}</td>
+          <td  onClick={() => onPriceClick(price)} style={priceStyle}>{formatPrice(price)}</td>
+          <td  style={{ fontSize: "10px", color: "white", }}>{size}</td>
           <td  style={{ fontSize: "10px", color: "white"}}>{total}</td>
         </tr>
       );

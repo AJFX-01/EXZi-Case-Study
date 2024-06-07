@@ -6,12 +6,12 @@ import OrderTypeDropdown, { orderTypes } from "./OrderType";
 import { useSelector, useDispatch } from "react-redux";
 import QuantitySlider from "./QuantityRange";
 import { toast } from "react-toastify";
-import { formatToFiveDecimalPlaces, formatTradingPair } from "../../utils/orders";
+import { formatToFiveDecimalPlaces, formatToSignificantDecimals, formatTradingPair } from "../../utils/orders";
 import { reduceBalance, addOrder, setCryptoPair, setFormattedCryptoPair } from "../../red/actions";
 import PairDropdown from "../Pairs";
 import axios from 'axios';
 
-const CreateOrder = () => {
+const CreateOrder = ({ selectedPrice }) => {
   const dispatch = useDispatch();
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -29,14 +29,15 @@ const CreateOrder = () => {
     setPrice(newPrice);
   };
 
+
   const handleQuantityChange2 = (e) => {
-    const newQuantity = formatToFiveDecimalPlaces(e.target.value);
+    const newQuantity = formatToSignificantDecimals(e.target.value);
     setQuantity(newQuantity);
   };
 
   const updateQuantity = (price, percentage) => {
     if (price > 0) {
-      const newQuantity = formatToFiveDecimalPlaces((balance * percentage) / (100 * price));
+      const newQuantity = formatToSignificantDecimals((balance * percentage) / (100 * price));
       setQuantity(newQuantity);
     }
   };
@@ -60,6 +61,13 @@ const CreateOrder = () => {
     updateQuantity(price, sliderValue, updateQuantity);
   }, [price, sliderValue]);
 
+  
+  useEffect(() => {
+    if (selectedPrice) {
+      setPrice(selectedPrice);
+    }
+  }, [selectedPrice]);
+
   useEffect(() => {
     const fetchMarketPrice = async () => {
       try {
@@ -77,9 +85,11 @@ const CreateOrder = () => {
           setMarketPrice(marketPrice);
           setPrice(marketPrice); // Set the initial price for LIMIT orders
         } else {
+          toast.error("Failed to fetch market price");
           console.error("No market price data available");
         }
       } catch (error) {
+        toast.error("Failed to fetch market price");
         console.error("Error fetching market price:", error);
       }
     };
@@ -176,7 +186,7 @@ const CreateOrder = () => {
           <InputField
             label="Price"
             type="number"
-            value={(price)}
+            value={price}
             onChange={handlePriceChange1}
           />
         )}

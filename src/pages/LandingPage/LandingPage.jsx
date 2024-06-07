@@ -4,9 +4,16 @@ import CreateOrder from "../../components/Orders/CreateOrder";
 import { ToastContainer, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import OrderTable from "../../components/Orders/OrderHistory";
+import { useState } from'react';
 
 const LandingPage = () => {
 
+
+    const [selectedPrice, setSelectedPrice] = useState('');
+
+    const handlePriceClick = (price) => {
+      setSelectedPrice(price);
+    };
 
     return (
         <>
@@ -25,11 +32,11 @@ const LandingPage = () => {
             theme="colored"
             />
             <div style={{ display: "flex", flexDirection: "row"}}>
-                <OrderBook/>
+                <OrderBook onPriceClick={handlePriceClick}/>
                 <Chart/>
             </div>
             <div style={{ justifyContent: "space-between", display: "flex", flexDirection: "row", width: "95%", padding: "20px"}}>
-                <CreateOrder/>
+                <CreateOrder selectedPrice={selectedPrice}/>
                 <OrderTable/>
             </div>
         </>
